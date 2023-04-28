@@ -54,6 +54,8 @@ create_directory phew
 create_directory phew/phew
 
 copy "main.py" :
+copy "epd.py" :
+copy "config.py" :
 
 copy "enviro/*.py" :enviro/
 

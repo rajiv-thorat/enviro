@@ -30,12 +30,13 @@ sleep(0.5)
 # import enviro firmware, this will trigger provisioning if needed
 import enviro
 import os
+from epd import EPD_2in9_Landscape
 
 
 try:
   # initialise enviro
   enviro.startup()
-
+  epd_ = EPD_2in9_Landscape()
   # if the clock isn't set...
   if not enviro.is_clock_set():
     enviro.logging.info("> clock not set, synchronise from ntp server")
@@ -59,6 +60,7 @@ try:
         enviro.halt("! reading upload failed")
     else:
       # no destination so go to sleep
+      epd_.display_info("! low disk space")
       enviro.halt("! low disk space")
 
   # TODO this seems to be useful to keep around?
@@ -69,7 +71,7 @@ try:
   # take a reading from the onboard sensors
   enviro.logging.debug(f"> taking new reading")
   reading = enviro.get_sensor_readings()
-
+  epd_.display_info(reading)
   # here you can customise the sensor readings by adding extra information
   # or removing readings that you don't want, for example:
   # 
@@ -90,10 +92,11 @@ try:
         enviro.halt("! reading upload failed")
     else:
       enviro.logging.info(f"> {enviro.cached_upload_count()} cache file(s) not being uploaded. Waiting until there are {enviro.config.upload_frequency} file(s)")
-  else:
-    # otherwise save reading to local csv file (look in "/readings")
-    enviro.logging.debug(f"> saving reading locally")
-    enviro.save_reading(reading)
+  # Skipping the local data write.    
+  # else:
+  #   # otherwise save reading to local csv file (look in "/readings")
+  #   enviro.logging.debug(f"> saving reading locally")
+  #   enviro.save_reading(reading)
 
   # go to sleep until our next scheduled reading
   enviro.sleep()
